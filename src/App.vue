@@ -1,28 +1,85 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <v-stage :config="configKonva">
+      <v-layer ref="body">
+        <v-image :config="{
+          image: bodyImage,
+          scaleX:0.2,
+          scaleY:0.2,
+        }"/>
+      </v-layer>
+
+        
+        <v-layer ref="eyes">
+          <v-image :config="{
+            image: eyesImage,
+            scaleX:0.2,
+            scaleY:0.2,
+            x:20,
+          }"/>
+        </v-layer>
+
+
+    </v-stage>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+
+function addImageProcess(src){
+  return new Promise((resolve, reject) => {
+    let img = new Image()
+    img.onload = () => resolve(img)
+    img.onerror = reject
+    img.src = src
+  })
+}
 
 export default {
   name: 'App',
   components: {
-    HelloWorld
+  },
+  data() {
+    return {
+      bodyImage: null,
+      eyesImage: null,
+      configKonva: {
+        width: 1920,
+        height: 1080,
+      },
+      configCircle: {
+        x: 100,
+        y: 100,
+        radius: 70,
+        fill: "black",
+        stroke: "black",
+        strokeWidth: 4
+      }
+    };
+  },
+  async mounted() {
+    /*
+    const bodyImg = new window.Image();
+    bodyImg.src = "/images/karada.png";
+    bodyImg.onload = () => {
+      this.bodyImage = bodyImg;
+      console.log(bodyImg.width, bodyImg.height)
+    };
+    const eyesImg = new window.Image();
+    eyesImg.src = "/images/hitomi.png";
+    eyesImg.onload = () => {
+      this.eyesImage = eyesImg;
+    };
+    */
+    
+   this.bodyImage = await addImageProcess('/images/karada.png')
+   this.eyesImage = await addImageProcess('/images/hitomi.png')
+  
   }
 }
 </script>
 
 <style>
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
 }
 </style>
