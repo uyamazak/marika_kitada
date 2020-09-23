@@ -3,7 +3,7 @@
     <v-stage :config="configKonva" ref='stage' id='stage'>
         <v-layer ref='marika' id='marika'>
           <v-group ref="marikaGroup">
-            <v-image 
+            <v-image
             ref='eyes'
             :config="{
             image: eyesImage,
@@ -12,7 +12,7 @@
             x: eyeX,
             y: eyeY,
           }"/>
-          <v-image 
+          <v-image
           ref='body'
           :config="{
             image: bodyImage,
@@ -35,10 +35,10 @@
 
 function addImageProcess(src){
   return new Promise((resolve, reject) => {
-    let img = new Image()
+    const img = new Image()
+    img.src = src
     img.onload = () => resolve(img)
     img.onerror = reject
-    img.src = src
   })
 }
 
