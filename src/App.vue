@@ -137,8 +137,8 @@ export default {
     },
   },
   async mounted() {
-    this.eyesImage = await addImageProcess('/images/hitomi.png')
-    this.bodyImage = await addImageProcess('/images/karada.png')
+    this.eyesImage = await addImageProcess('/marika_kitada/images/hitomi.png')
+    this.bodyImage = await addImageProcess('/marika_kitada/images/karada.png')
     this.$refs.eyes.getNode().moveToBottom()
     this.stream = document.getElementsByTagName('canvas')[0].captureStream()
     this.recorder = new MediaRecorder(this.stream, {mimeType:'video/webm;codecs=vp9'});
