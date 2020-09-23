@@ -51,30 +51,30 @@
       v-model="drawer"
       app
       right
+      :permanent='true'
     >
     <v-list>
       <v-list-item>
         <v-list-item-content>
             <v-list-item-title>eyeX: {{ eyeX }}</v-list-item-title>
-              <v-slider
-                v-model="eyeX"
-                class="align-center"
-                :max="12"
-                :min="-14"
-                step="0.1"
-              />
+            <v-slider
+              v-model="eyeX"
+              class="align-center"
+              :max="12"
+              :min="-14"
+              step="0.1"
+            />
         </v-list-item-content>
       </v-list-item>
       <v-list-item>
         <v-list-item-content>
-        <v-list-item-title>eyeY: {{ eyeY }}</v-list-item-title>
-        <v-slider
-          v-model="eyeY"
-          class="align-center"
-          :max="10"
-          :min="-10"
-          step="0.1"
-        />
+          <v-list-item-title>eyeY: {{ eyeY }}</v-list-item-title>
+          <v-slider
+            v-model="eyeY"
+            :max="15"
+            :min="-15"
+            step="0.1"
+          />
         </v-list-item-content>
       </v-list-item>
 
