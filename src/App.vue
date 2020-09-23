@@ -1,34 +1,95 @@
 <template>
-  <div id="app">
-    <v-stage :config="configKonva" ref='stage' id='stage'>
-        <v-layer ref='marika' id='marika'>
-          <v-group ref="marikaGroup">
-            <v-image
-            ref='eyes'
-            :config="{
-            image: eyesImage,
-            scaleX:allScale,
-            scaleY:allScale,
-            x: eyeX,
-            y: eyeY,
-          }"/>
-          <v-image
-          ref='body'
-          :config="{
-            image: bodyImage,
-            scaleX:allScale,
-            scaleY:allScale,
-          }"
-          />
+<div id="app">
+  <v-app>
+    <v-main>
+      <v-container
+        class="fill-height"
+        fluid
+      >
+        <v-stage :config="configKonva" ref='stage' id='stage'>
+          <v-layer ref='marika' id='marika'>
+            <v-group ref="marikaGroup">
+              <v-rect :config="{
+                  x: 0,
+                  y: 0,
+                  width: 1280,
+                  height: 780,
+                  fill: '#EEE',
+                }"
+              />
+              <v-image
+                ref='eyes'
+                :config="{
+                image: eyesImage,
+                scaleX:allScale,
+                scaleY:allScale,
+                x: eyeX,
+                y: eyeY,
+              }"/>
+              <v-image
+                ref='body'
+                :config="{
+                  image: bodyImage,
+                  scaleX:allScale,
+                  scaleY:allScale,
+                }"
+              />
+            </v-group>
+          </v-layer>
+        </v-stage>
+      </v-container>
+    </v-main>
+    <v-app-bar
+      app
+      color="indigo"
+      dark
+    >
+      <v-toolbar-title>@marika_kitada</v-toolbar-title>
+    </v-app-bar>
 
+    <v-navigation-drawer
+      v-model="drawer"
+      app
+      right
+    >
+    <v-list>
+      <v-list-item>
+        <v-list-item-content>
+            <v-list-item-title>eyeX: {{ eyeX }}</v-list-item-title>
+              <v-slider
+                v-model="eyeX"
+                class="align-center"
+                :max="12"
+                :min="-14"
+                step="0.1"
+              />
+        </v-list-item-content>
+      </v-list-item>
+      <v-list-item>
+        <v-list-item-content>
+        <v-list-item-title>eyeY: {{ eyeY }}</v-list-item-title>
+        <v-slider
+          v-model="eyeY"
+          class="align-center"
+          :max="10"
+          :min="-10"
+          step="0.1"
+        />
+        </v-list-item-content>
+      </v-list-item>
 
-           </v-group>
-        </v-layer>
-    </v-stage>
-    <button @click='start'>start</button>
-    <button @click='stop'>stop</button>
-    <a v-if='movieData' :href='movieData' download='movie.webm'>download</a>
-  </div>
+      <v-list-item>
+        <v-list-item-content>
+          <v-list-item-title>録画</v-list-item-title>
+          <v-btn @click='start'>start</v-btn>
+          <v-btn @click='stop'>stop</v-btn>
+          <v-btn v-if='movieData' :href='movieData' download='movie.webm'>download</v-btn>
+        </v-list-item-content>
+      </v-list-item>
+    </v-list>
+    </v-navigation-drawer>
+  </v-app>
+</div>
 </template>
 
 <script>
@@ -51,13 +112,12 @@ export default {
       bodyImage: null,
       eyesImage: null,
       configKonva: {
-        width: 1920,
-        height: 1080,
-        background: 'red',
+        width: 1280,
+        height: 780,
       },
-      eyeX: 5,
-      eyeY: 1,
-      allScale: 0.2,
+      eyeX: 0,
+      eyeY: 0,
+      allScale: 0.23,
       stream: null,
       recorder: null,
       movieData: null,
@@ -91,10 +151,11 @@ export default {
     /**/
   },
   created() {
-    setInterval(()=>{
+    /*setInterval(()=>{
       this.eyeX *=-1
       this.eyeY *=-1
     }, 100)
+    */
   }
 }
 </script>
