@@ -1,8 +1,11 @@
 <template>
 <div id="app">
   <v-app>
-    <v-container fluid>
-        <h1>@marika_kitada</h1>
+    <v-app-bar app color="indigo" dark>
+      <v-toolbar-title>@marika_kitada</v-toolbar-title>
+    </v-app-bar>
+    <v-main>
+      <v-container fluid>
         <v-row>
           <v-col lg="10">
             <v-stage :config="configStage" ref='stage' id='stage'>
@@ -17,8 +20,25 @@
                       fill: '#f5f5f5',
                     }"
                   />
+                  <v-image
+                    ref='bg'
+                    :config="{
+                      image: backgroundImage,
+                      width: 1280,
+                      height: 780,
+                    }"
+                  />
                 </v-group>
                 <v-group ref="marikaGroup" :config="configMarika">
+                  <v-rect
+                    :config="{
+                      x: 600,
+                      y: 450,
+                      width: 500,
+                      height: 300,
+                      fill: '#fff',
+                    }"
+                  />
                   <v-image
                     ref='eyes'
                     :config="{
@@ -27,12 +47,14 @@
                       y: eyeY,
                     }"
                   />
+
                   <v-image
                     ref='body'
                     :config="{
                       image: bodyImage,
                     }"
                   />
+
                 </v-group>
               </v-layer>
             </v-stage>
@@ -50,20 +72,20 @@
                       :min="-70"
                       step="0.1"
                     />
+
+                  <v-list-item-title>eyeY: {{ eyeY }}</v-list-item-title>
+                  <v-slider
+                    v-model="eyeY"
+                    class="align-center"
+                    :max="70"
+                    :min="-70"
+                    step="0.1"
+                  />
+                  <v-btn @click="toggleEyeTremble()">Eye Tremble</v-btn>
                 </v-list-item-content>
               </v-list-item>
-              <v-list-item>
-                <v-list-item-content>
-                <v-list-item-title>eyeY: {{ eyeY }}</v-list-item-title>
-                <v-slider
-                  v-model="eyeY"
-                  class="align-center"
-                  :max="70"
-                  :min="-70"
-                  step="0.1"
-                />
-                </v-list-item-content>
-              </v-list-item>
+
+
 
               <v-list-item>
                 <v-list-item-content>
@@ -84,8 +106,8 @@
                 <v-slider
                   v-model="marikaY"
                   class="align-center"
-                  :max="720"
-                  :min="-780"
+                  :max="800"
+                  :min="-800"
                   step="1"
                 />
                 </v-list-item-content>
@@ -106,7 +128,7 @@
 
               <v-list-item>
                 <v-list-item-content>
-                  <v-list-item-title>録画{{ recorderState }}</v-list-item-title>
+                  <v-list-item-title>録画 {{ recorderState }}</v-list-item-title>
                   <v-btn @click='start' :disabled="isRecording">start</v-btn>
                   <v-btn @click='stop' :disabled="!isRecording">stop</v-btn>
                   <v-btn v-if='movieData' :href='movieData' download='movie.webm'>download</v-btn>
@@ -116,6 +138,10 @@
           </v-col>
         </v-row>
       </v-container>
+    </v-main>
+    <v-footer app>
+      <a href="https://twitter.com/marika_kitada" target="_blank">twitter</a>
+    </v-footer>
   </v-app>
 </div>
 </template>
@@ -138,10 +164,11 @@ export default {
       drawer: true,
       bodyImage: null,
       eyesImage: null,
+      backgroundImage: null,
       stageWidth: 1280,
       stageHeight: 720,
       stageScale: 1,
-      marikaX: 0,
+      marikaX: 515,
       marikaY: 0,
       marikaScale: 0.23,
       eyeX: 0,
@@ -150,6 +177,7 @@ export default {
       recorder: null,
       recorderState: null,
       movieData: null,
+      eyeTrembleIntervalId: null,
     };
   },
   computed: {
@@ -157,7 +185,10 @@ export default {
       return {
         width: this.stageWidth,
         height: this.stageHeight,
-        scale: {x: this.stageScale, y: this.stageScale},
+        scale: {
+          x: this.stageScale,
+          y: this.stageScale
+        },
       }
     },
     configMarika() {
@@ -168,10 +199,7 @@ export default {
       }
     },
     isRecording() {
-      if (this.recorderState === 'recording') {
-        return true
-      }
-      return false
+      return this.recorderState === 'recording'
     }
   },
   methods: {
@@ -204,26 +232,36 @@ export default {
         return
       }
       this.recorderState = this.recorder.state
+    },
+    toggleEyeTremble() {
+      if (this.eyeTrembleIntervalId) {
+        clearInterval(this.eyeTrembleIntervalId)
+        this.eyeTrembleIntervalId = null
+        return
+      }
+      this.eyeTrembleIntervalId = setInterval(()=>{
+        const max = 0.5
+        const min = -0.5
+        this.eyeX = this.eyeX * Math.random() * (max - min) + min;
+        this.eyeY = this.eyeY * Math.random() * (max - min) + min;
+      }, 200)
     }
   },
   async mounted() {
+    this.backgroundImage = await addImageProcess('/marika_kitada/images/bg.jpg')
     this.eyesImage = await addImageProcess('/marika_kitada/images/hitomi.png')
     this.bodyImage = await addImageProcess('/marika_kitada/images/karada.png')
     this.$refs.eyes.getNode().moveToBottom()
     this.recoderInit()
   },
   created() {
-    /*setInterval(()=>{
-      this.eyeX *=-1
-      this.eyeY *=-1
-    }, 100)
-    */
+
   }
 }
 </script>
 
 <style>
 #app {
-  padding: 20px;
+
 }
 </style>
