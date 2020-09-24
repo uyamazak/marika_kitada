@@ -2,6 +2,7 @@
 <div id="app">
   <v-app>
     <v-main>
+      <h1>@marika_kitada</h1>
       <v-container
         class="fill-height"
         fluid
@@ -39,19 +40,8 @@
         </v-stage>
       </v-container>
     </v-main>
-    <v-app-bar
-      app
-      color="indigo"
-      dark
-    >
-      <v-toolbar-title>@marika_kitada</v-toolbar-title>
-    </v-app-bar>
 
-    <v-navigation-drawer
-      v-model="drawer"
-      app
-      right
-    >
+
     <v-list>
       <v-list-item>
         <v-list-item-content>
@@ -126,7 +116,7 @@
         </v-list-item-content>
       </v-list-item>
     </v-list>
-    </v-navigation-drawer>
+
   </v-app>
 </div>
 </template>
