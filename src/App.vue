@@ -7,23 +7,23 @@
         fluid
       >
         <v-stage :config="configKonva" ref='stage' id='stage'>
-          <v-layer ref='marika' id='marika'>
-            <v-group ref="marikaGroup">
+          <v-layer>
+            <v-group>
               <v-rect
                 :config="{
                   x: 0,
                   y: 0,
                   width: 1280,
                   height: 780,
-                  fill: '#EEE',
+                  fill: '#f5f5f5',
                 }"
               />
+            </v-group>
+            <v-group ref="marikaGroup" :config="configMarika">
               <v-image
                 ref='eyes'
                 :config="{
                   image: eyesImage,
-                  scaleX:allScale,
-                  scaleY:allScale,
                   x: eyeX,
                   y: eyeY,
                 }"
@@ -32,8 +32,6 @@
                 ref='body'
                 :config="{
                   image: bodyImage,
-                  scaleX:allScale,
-                  scaleY:allScale,
                 }"
               />
             </v-group>
@@ -82,9 +80,48 @@
 
       <v-list-item>
         <v-list-item-content>
-          <v-list-item-title>録画</v-list-item-title>
-          <v-btn @click='start'>start</v-btn>
-          <v-btn @click='stop'>stop</v-btn>
+        <v-list-item-title>marikaX: {{ marikaX }}</v-list-item-title>
+        <v-slider
+          v-model="marikaX"
+          class="align-center"
+          :max="1380"
+          :min="-400"
+          step="1"
+        />
+        </v-list-item-content>
+      </v-list-item>
+
+      <v-list-item>
+        <v-list-item-content>
+        <v-list-item-title>marikaY: {{ marikaY }}</v-list-item-title>
+        <v-slider
+          v-model="marikaY"
+          class="align-center"
+          :max="720"
+          :min="-780"
+          step="1"
+        />
+        </v-list-item-content>
+      </v-list-item>
+
+      <v-list-item>
+        <v-list-item-content>
+        <v-list-item-title>marikaScale: {{ marikaScale }}</v-list-item-title>
+        <v-slider
+          v-model="marikaScale"
+          class="align-center"
+          :max="2"
+          :min="0.1"
+          step="0.01"
+        />
+        </v-list-item-content>
+      </v-list-item>
+
+      <v-list-item>
+        <v-list-item-content>
+          <v-list-item-title>録画{{ recorderState }}</v-list-item-title>
+          <v-btn @click='start' :disabled="isRecording">start</v-btn>
+          <v-btn @click='stop' :disabled="!isRecording">stop</v-btn>
           <v-btn v-if='movieData' :href='movieData' download='movie.webm'>download</v-btn>
         </v-list-item-content>
       </v-list-item>
@@ -109,41 +146,73 @@ export default {
   components: {},
   data() {
     return {
+      drawer: true,
       bodyImage: null,
       eyesImage: null,
-      configKonva: {
-        width: 1280,
-        height: 780,
-      },
+      stageWidth: 1280,
+      stageHeight: 720,
+      marikaX: 0,
+      marikaY: 0,
+      marikaScale: 0.23,
       eyeX: 0,
       eyeY: 0,
-      allScale: 0.23,
       stream: null,
       recorder: null,
+      recorderState: null,
       movieData: null,
     };
+  },
+  computed: {
+    configKonva() {
+      return {
+        width: this.stageWidth,
+        height: this.stageHeight,
+      }
+    },
+    configMarika() {
+      return {
+        x: this.marikaX,
+        y: this.marikaY,
+        scale: {x: this.marikaScale, y: this.marikaScale},
+      }
+    },
+    isRecording() {
+      if (this.recorderState === 'recording') {
+        return true
+      }
+      return false
+    }
   },
   methods: {
     start() {
       console.log('start')
       this.movieData = null
       this.recorder.start()
+      this.updateRecorderState()
       console.log(this.recorder)
     },
     stop() {
       console.log('stop')
       this.recorder.stop()
+      this.updateRecorderState()
       console.log(this.recorder)
     },
     recoderInit() {
       this.stream = document.getElementsByTagName('canvas')[0].captureStream()
       this.recorder = new MediaRecorder(this.stream, {mimeType:'video/webm;codecs=vp9'});
       this.recorder.ondataavailable = (e) => {
-        console.log('ondataavailable')
+        console.log('ondataavailable', e)
         const videoBlob = new Blob([e.data], { type: e.data.type })
         this.movieData = window.URL.createObjectURL(videoBlob)
       }
+      this.updateRecorderState()
       console.log(this.stream)
+    },
+    updateRecorderState() {
+      if (!this.recorder) {
+        return
+      }
+      this.recorderState = this.recorder.state
     }
   },
   async mounted() {
