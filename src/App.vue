@@ -9,7 +9,8 @@
         <v-stage :config="configKonva" ref='stage' id='stage'>
           <v-layer ref='marika' id='marika'>
             <v-group ref="marikaGroup">
-              <v-rect :config="{
+              <v-rect
+                :config="{
                   x: 0,
                   y: 0,
                   width: 1280,
@@ -20,12 +21,13 @@
               <v-image
                 ref='eyes'
                 :config="{
-                image: eyesImage,
-                scaleX:allScale,
-                scaleY:allScale,
-                x: eyeX,
-                y: eyeY,
-              }"/>
+                  image: eyesImage,
+                  scaleX:allScale,
+                  scaleY:allScale,
+                  x: eyeX,
+                  y: eyeY,
+                }"
+              />
               <v-image
                 ref='body'
                 :config="{
@@ -71,8 +73,8 @@
         <v-slider
           v-model="eyeY"
           class="align-center"
-          :max="10"
-          :min="-10"
+          :max="14"
+          :min="-14"
           step="0.1"
         />
         </v-list-item-content>
@@ -93,7 +95,6 @@
 </template>
 
 <script>
-
 function addImageProcess(src){
   return new Promise((resolve, reject) => {
     const img = new Image()
@@ -105,8 +106,7 @@ function addImageProcess(src){
 
 export default {
   name: 'App',
-  components: {
-  },
+  components: {},
   data() {
     return {
       bodyImage: null,
@@ -123,32 +123,34 @@ export default {
       movieData: null,
     };
   },
-  methods:{
-    start(){
+  methods: {
+    start() {
       console.log('start')
       this.movieData = null
       this.recorder.start()
       console.log(this.recorder)
     },
-    stop(){
+    stop() {
       console.log('stop')
       this.recorder.stop()
       console.log(this.recorder)
     },
+    recoderInit() {
+      this.stream = document.getElementsByTagName('canvas')[0].captureStream()
+      this.recorder = new MediaRecorder(this.stream, {mimeType:'video/webm;codecs=vp9'});
+      this.recorder.ondataavailable = (e) => {
+        console.log('ondataavailable')
+        const videoBlob = new Blob([e.data], { type: e.data.type })
+        this.movieData = window.URL.createObjectURL(videoBlob)
+      }
+      console.log(this.stream)
+    }
   },
   async mounted() {
     this.eyesImage = await addImageProcess('/images/hitomi.png')
     this.bodyImage = await addImageProcess('/images/karada.png')
     this.$refs.eyes.getNode().moveToBottom()
-    this.stream = document.getElementsByTagName('canvas')[0].captureStream()
-    this.recorder = new MediaRecorder(this.stream, {mimeType:'video/webm;codecs=vp9'});
-    this.recorder.ondataavailable = (e) => {
-      console.log('ondataavailable')
-      const videoBlob = new Blob([e.data], { type: e.data.type })
-      this.movieData = window.URL.createObjectURL(videoBlob)
-    }
-    console.log(this.stream)
-    /**/
+    this.recoderInit()
   },
   created() {
     /*setInterval(()=>{
