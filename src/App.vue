@@ -1,16 +1,24 @@
 <template>
   <div id="app">
     <v-app>
-      <v-app-bar app color="indigo" dark>
+      <v-app-bar
+        app
+        color="indigo"
+        dark
+      >
         <v-toolbar-title>@marika_kitada</v-toolbar-title>
       </v-app-bar>
       <v-main>
         <v-container fluid>
           <v-row>
             <v-col lg="10">
-              <v-stage :config="configStage" ref="stage" id="stage">
+              <v-stage
+                id="stage"
+                ref="stage"
+                :config="configStage"
+              >
                 <v-layer>
-                  <v-group>
+                  <v-group ref="backgounrd">
                     <v-rect
                       :config="{
                         x: 0,
@@ -29,7 +37,10 @@
                       }"
                     />
                   </v-group>
-                  <v-group ref="marikaGroup" :config="configMarika">
+                  <v-group
+                    ref="marikaGroup"
+                    :config="configMarika"
+                  >
                     <v-rect
                       :config="{
                         x: 600,
@@ -47,12 +58,16 @@
                         y: eyeY
                       }"
                     />
-
                     <v-image
                       ref="body"
                       :config="{
                         image: bodyImage
                       }"
+                    />
+                  </v-group>
+                  <v-group ref="subtitle">
+                    <v-text
+                      :config="configSubtitle"
                     />
                   </v-group>
                 </v-layer>
@@ -80,15 +95,17 @@
                       :min="-70"
                       step="0.1"
                     />
-                    <v-btn @click="toggleEyeTremble()">Eye Tremble</v-btn>
+                    <v-btn @click="toggleEyeTremble()">
+                      Eye Tremble
+                    </v-btn>
                   </v-list-item-content>
                 </v-list-item>
 
                 <v-list-item>
                   <v-list-item-content>
-                    <v-list-item-title
-                      >marikaX: {{ marikaX }}</v-list-item-title
-                    >
+                    <v-list-item-title>
+                      marikaX: {{ marikaX }}
+                    </v-list-item-title>
                     <v-slider
                       v-model="marikaX"
                       class="align-center"
@@ -101,9 +118,9 @@
 
                 <v-list-item>
                   <v-list-item-content>
-                    <v-list-item-title
-                      >marikaY: {{ marikaY }}</v-list-item-title
-                    >
+                    <v-list-item-title>
+                      marikaY: {{ marikaY }}
+                    </v-list-item-title>
                     <v-slider
                       v-model="marikaY"
                       class="align-center"
@@ -116,9 +133,9 @@
 
                 <v-list-item>
                   <v-list-item-content>
-                    <v-list-item-title
-                      >marikaScale: {{ marikaScale }}</v-list-item-title
-                    >
+                    <v-list-item-title>
+                      marikaScale: {{ marikaScale }}
+                    </v-list-item-title>
                     <v-slider
                       v-model="marikaScale"
                       class="align-center"
@@ -131,17 +148,37 @@
 
                 <v-list-item>
                   <v-list-item-content>
-                    <v-list-item-title
-                      >録画 {{ recorderState }}</v-list-item-title
+                    <v-list-item-title>
+                      subtitle
+                    </v-list-item-title>
+                    <v-textarea v-model="subtitleText" />
+                  </v-list-item-content>
+                </v-list-item>
+
+                <v-list-item>
+                  <v-list-item-content>
+                    <v-list-item-title>
+                      録画 {{ recorderState }}
+                    </v-list-item-title>
+                    <v-btn
+                      :disabled="isRecording"
+                      @click="start"
                     >
-                    <v-btn @click="start" :disabled="isRecording">start</v-btn>
-                    <v-btn @click="stop" :disabled="!isRecording">stop</v-btn>
+                      start
+                    </v-btn>
+                    <v-btn
+                      :disabled="!isRecording"
+                      @click="stop"
+                    >
+                      stop
+                    </v-btn>
                     <v-btn
                       v-if="movieData"
                       :href="movieData"
                       download="movie.webm"
-                      >download</v-btn
                     >
+                      download
+                    </v-btn>
                   </v-list-item-content>
                 </v-list-item>
               </v-list>
@@ -150,21 +187,24 @@
         </v-container>
       </v-main>
       <v-footer app>
-        <a href="https://twitter.com/marika_kitada" target="_blank">twitter</a>
+        <a
+          href="https://twitter.com/marika_kitada"
+          target="_blank"
+        >twitter</a>
       </v-footer>
     </v-app>
   </div>
 </template>
 
 <script>
-const imageSrcPrefix = "/marika_kitada/images/";
-function addImageProcess(src) {
+const imageSrcPrefix = '/marika_kitada/images/'
+function addImageProcess (src) {
   return new Promise((resolve, reject) => {
-    const img = new Image();
-    img.src = imageSrcPrefix + src;
-    img.onload = () => resolve(img);
-    img.onerror = reject;
-  });
+    const img = new Image()
+    img.src = imageSrcPrefix + src
+    img.onload = () => resolve(img)
+    img.onerror = reject
+  })
 }
 const DEFAULTS = {
   marikaX: 240,
@@ -173,11 +213,11 @@ const DEFAULTS = {
   eyeX: 0,
   eyeY: 0,
   eyeTremble: 0.9
-};
+}
 export default {
-  name: "App",
+  name: 'App',
   components: {},
-  data() {
+  data () {
     return {
       drawer: true,
       bodyImage: null,
@@ -195,11 +235,12 @@ export default {
       recorder: null,
       recorderState: null,
       movieData: null,
-      eyeTrembleIntervalId: null
-    };
+      eyeTrembleIntervalId: null,
+      subtitleText: 'うわぁあああああああああああああああ'
+    }
   },
   computed: {
-    configStage() {
+    configStage () {
       return {
         width: this.stageWidth,
         height: this.stageHeight,
@@ -207,79 +248,101 @@ export default {
           x: this.stageScale,
           y: this.stageScale
         }
-      };
+      }
     },
-    configMarika() {
+    configMarika () {
       return {
         x: this.marikaX,
         y: this.marikaY,
         scale: { x: this.marikaScale, y: this.marikaScale }
-      };
+      }
     },
-    isRecording() {
-      return this.recorderState === "recording";
+    configSubtitle () {
+      return {
+        x: 50,
+        y: 600,
+        width: 1180,
+        height: 100,
+        text: this.subtitleText,
+        fontSize: 36,
+        lineHeight: 1.2,
+        fill: 'red',
+        stroke: 'white',
+        strokeWidth: 0.2,
+        shadowEnabled: true,
+        shadowColor: 'white',
+        shadowBlur: 1,
+        shadowOffset: { x: 2, y: 2 },
+        shadowOpacity: 1
+      }
+    },
+    isRecording () {
+      return this.recorderState === 'recording'
     }
+  },
+  async mounted () {
+    this.backgroundImage = await addImageProcess('bg.jpg')
+    this.eyesImage = await addImageProcess('hitomi.png')
+    this.bodyImage = await addImageProcess('karada.png')
+    this.$refs.eyes.getNode().moveToBottom()
+    this.recoderInit()
+    this.toggleEyeTremble()
+  },
+  created () {
+    console.log(
+      'MediaRecorder.isTypeSupported: ',
+      MediaRecorder.isTypeSupported('video/mp4')
+    )
   },
   methods: {
-    start() {
-      console.log("start");
-      this.movieData = null;
-      this.recorder.start();
-      this.updateRecorderState();
-      console.log(this.recorder);
+    start () {
+      console.log('start')
+      this.movieData = null
+      this.recorder.start()
+      this.updateRecorderState()
+      console.log(this.recorder)
     },
-    stop() {
-      console.log("stop");
-      this.recorder.stop();
-      this.updateRecorderState();
-      console.log(this.recorder);
+    stop () {
+      console.log('stop')
+      this.recorder.stop()
+      this.updateRecorderState()
+      console.log(this.recorder)
     },
-    recoderInit() {
-      this.stream = document.getElementsByTagName("canvas")[0].captureStream();
+    recoderInit () {
+      this.stream = document.getElementsByTagName('canvas')[0].captureStream()
       this.recorder = new MediaRecorder(this.stream, {
-        mimeType: "video/webm;codecs=vp9"
-      });
+        mimeType: 'video/webm;codecs=vp9'
+      })
       this.recorder.ondataavailable = e => {
-        console.log("ondataavailable", e);
-        const videoBlob = new Blob([e.data], { type: e.data.type });
-        this.movieData = window.URL.createObjectURL(videoBlob);
-      };
-      this.updateRecorderState();
-      console.log(this.stream);
-    },
-    updateRecorderState() {
-      if (!this.recorder) {
-        return;
+        console.log('ondataavailable', e)
+        const videoBlob = new Blob([e.data], { type: e.data.type })
+        this.movieData = window.URL.createObjectURL(videoBlob)
       }
-      this.recorderState = this.recorder.state;
+      this.updateRecorderState()
+      console.log(this.stream)
     },
-    toggleEyeTremble() {
+    updateRecorderState () {
+      if (!this.recorder) {
+        return
+      }
+      this.recorderState = this.recorder.state
+    },
+    toggleEyeTremble () {
       if (this.eyeTrembleIntervalId) {
-        clearInterval(this.eyeTrembleIntervalId);
-        this.eyeTrembleIntervalId = null;
-        return;
+        clearInterval(this.eyeTrembleIntervalId)
+        this.eyeTrembleIntervalId = null
+        return
       }
       this.eyeTrembleIntervalId = setInterval(() => {
-        const max = DEFAULTS.eyeTremble;
-        const min = -DEFAULTS.eyeTremble;
-        this.eyeX += Math.random() * (max - min) + min;
-        this.eyeY += Math.random() * (max - min) + min;
-      }, 250);
+        const max = DEFAULTS.eyeTremble
+        const min = -DEFAULTS.eyeTremble
+        this.eyeX += Math.random() * (max - min) + min
+        this.eyeY += Math.random() * (max - min) + min
+      }, 250)
+    },
+    updateSubtitle () {
+      this.$refs.subtitle.getNode().draw()
     }
-  },
-  async mounted() {
-    this.backgroundImage = await addImageProcess("bg.jpg");
-    this.eyesImage = await addImageProcess("hitomi.png");
-    this.bodyImage = await addImageProcess("karada.png");
-    this.$refs.eyes.getNode().moveToBottom();
-    this.recoderInit();
-    this.toggleEyeTremble();
-  },
-  created() {
-    console.log(
-      "MediaRecorder.isTypeSupported: ",
-      MediaRecorder.isTypeSupported("video/mp4")
-    );
   }
-};
+}
 </script>
