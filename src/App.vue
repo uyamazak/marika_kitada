@@ -147,10 +147,11 @@
 </template>
 
 <script>
+const imageSrcPrefix = '/marika_kitada/images/';
 function addImageProcess(src){
   return new Promise((resolve, reject) => {
     const img = new Image()
-    img.src = src
+    img.src = imageSrcPrefix + src
     img.onload = () => resolve(img)
     img.onerror = reject
   })
@@ -249,20 +250,21 @@ export default {
       this.eyeTrembleIntervalId = setInterval(()=>{
         const max = DEFAULTS.eyeTremble
         const min = - DEFAULTS.eyeTremble
-        this.eyeX = this.eyeX + (Math.random() * (max - min) + min);
-        this.eyeY = this.eyeY + (Math.random() * (max - min) + min);
+        this.eyeX += (Math.random() * (max - min) + min);
+        this.eyeY += (Math.random() * (max - min) + min);
       }, 250)
     }
   },
   async mounted() {
-    this.backgroundImage = await addImageProcess('/marika_kitada/images/bg.jpg')
-    this.eyesImage = await addImageProcess('/marika_kitada/images/hitomi.png')
-    this.bodyImage = await addImageProcess('/marika_kitada/images/karada.png')
+    this.backgroundImage = await addImageProcess('bg.jpg')
+    this.eyesImage = await addImageProcess('hitomi.png')
+    this.bodyImage = await addImageProcess('karada.png')
     this.$refs.eyes.getNode().moveToBottom()
     this.recoderInit()
     this.toggleEyeTremble()
   },
   created() {
+    console.log('MediaRecorder.isTypeSupported: ', MediaRecorder.isTypeSupported('video/mp4'))
 
   }
 }
