@@ -1,5 +1,7 @@
 # marika_kitada
 
+https://uyamazak.github.io/marika_kitada/
+
 ## Project setup
 ```
 yarn install
