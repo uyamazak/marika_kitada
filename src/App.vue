@@ -236,7 +236,7 @@ export default {
       recorderState: null,
       movieData: null,
       eyeTrembleIntervalId: null,
-      subtitleText: 'うわぁあああああああああああああああ'
+      subtitleText: 'おはぎゃー'
     }
   },
   computed: {
