@@ -155,7 +155,14 @@ function addImageProcess(src){
     img.onerror = reject
   })
 }
-
+const DEFAULTS = {
+  marikaX: 240,
+  marikaY: 43,
+  marikaScale: 0.46,
+  eyeX: 0,
+  eyeY: 0,
+  eyeTremble: 0.9
+}
 export default {
   name: 'App',
   components: {},
@@ -168,11 +175,11 @@ export default {
       stageWidth: 1280,
       stageHeight: 720,
       stageScale: 1,
-      marikaX: 515,
-      marikaY: 0,
-      marikaScale: 0.23,
-      eyeX: 0,
-      eyeY: 0,
+      marikaX: DEFAULTS.marikaX,
+      marikaY: DEFAULTS.marikaY,
+      marikaScale: DEFAULTS.marikaScale,
+      eyeX: DEFAULTS.eyeX,
+      eyeY: DEFAULTS.eyeY,
       stream: null,
       recorder: null,
       recorderState: null,
@@ -240,11 +247,11 @@ export default {
         return
       }
       this.eyeTrembleIntervalId = setInterval(()=>{
-        const max = 0.5
-        const min = -0.5
-        this.eyeX = this.eyeX * Math.random() * (max - min) + min;
-        this.eyeY = this.eyeY * Math.random() * (max - min) + min;
-      }, 200)
+        const max = DEFAULTS.eyeTremble
+        const min = - DEFAULTS.eyeTremble
+        this.eyeX = this.eyeX + (Math.random() * (max - min) + min);
+        this.eyeY = this.eyeY + (Math.random() * (max - min) + min);
+      }, 250)
     }
   },
   async mounted() {
@@ -253,6 +260,7 @@ export default {
     this.bodyImage = await addImageProcess('/marika_kitada/images/karada.png')
     this.$refs.eyes.getNode().moveToBottom()
     this.recoderInit()
+    this.toggleEyeTremble()
   },
   created() {
 
