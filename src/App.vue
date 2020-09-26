@@ -181,6 +181,27 @@
                     </v-btn>
                   </v-list-item-content>
                 </v-list-item>
+
+                <v-list-item>
+                  <v-list-item-content>
+                    <v-list-item-title>
+                      Filter
+                    </v-list-item-title>
+                    <v-checkbox
+                      v-for="(name, index) in allFilters"
+                      :key="index"
+                      v-model="selectedFilters"
+                      :label="name"
+                      :value="name"
+                    />
+
+                    <v-btn
+                      @click="applyFilter"
+                    >
+                      apply Filter
+                    </v-btn>
+                  </v-list-item-content>
+                </v-list-item>
               </v-list>
             </v-col>
           </v-row>
@@ -197,6 +218,7 @@
 </template>
 
 <script>
+import Konva from 'konva'
 const imageSrcPrefix = '/marika_kitada/images/'
 function addImageProcess (src) {
   return new Promise((resolve, reject) => {
@@ -236,7 +258,8 @@ export default {
       recorderState: null,
       movieData: null,
       eyeTrembleIntervalId: null,
-      subtitleText: 'おはぎゃー'
+      subtitleText: 'おはぎゃー',
+      selectedFilters: []
     }
   },
   computed: {
@@ -278,6 +301,22 @@ export default {
     },
     isRecording () {
       return this.recorderState === 'recording'
+    },
+    allFilters () {
+      return [
+        'Pixelate',
+        'Invert',
+        'Blur',
+        'Grayscale',
+        'Sepia',
+        'Solarize',
+        'Noise'
+      ]
+    },
+    filters () {
+      return this.selectedFilters.map((v) => {
+        return Konva.Filters[v]
+      })
     }
   },
   async mounted () {
@@ -342,6 +381,15 @@ export default {
     },
     updateSubtitle () {
       this.$refs.subtitle.getNode().draw()
+    },
+    applyFilter () {
+      [this.$refs.eyes, this.$refs.body].forEach((ref) => {
+        ref.getNode().cache().filters(this.filters)
+          .pixelSize(25)
+          .blurRadius(25)
+          .levels(0.5)
+          .noise(0.7)
+      })
     }
   }
 }
