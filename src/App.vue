@@ -42,6 +42,7 @@
                     :config="configMarika"
                   >
                     <v-rect
+                      ref="eyeBg"
                       :config="{
                         x: 600,
                         y: 450,
@@ -152,6 +153,11 @@
                       subtitle
                     </v-list-item-title>
                     <v-textarea v-model="subtitleText" />
+                    <v-select
+                      v-model="subtitleAlign"
+                      :items="['left', 'center', 'right']"
+                      label="Align"
+                    />
                   </v-list-item-content>
                 </v-list-item>
 
@@ -258,7 +264,8 @@ export default {
       recorderState: null,
       movieData: null,
       eyeTrembleIntervalId: null,
-      subtitleText: 'おはぎゃー',
+      subtitleText: 'おはぎゃー、北田まりかです',
+      subtitleAlign: 'left',
       selectedFilters: []
     }
   },
@@ -282,12 +289,14 @@ export default {
     },
     configSubtitle () {
       return {
-        x: 50,
-        y: 600,
+        x: 60,
+        y: 570,
         width: 1180,
-        height: 100,
+        height: 110,
         text: this.subtitleText,
-        fontSize: 36,
+        align: this.subtitleAlign,
+        fontSize: 42,
+        fontStyle: 'bold',
         lineHeight: 1.2,
         fill: 'red',
         stroke: 'white',
@@ -383,7 +392,11 @@ export default {
       this.$refs.subtitle.getNode().draw()
     },
     applyFilter () {
-      [this.$refs.eyes, this.$refs.body].forEach((ref) => {
+      [
+        this.$refs.eyes,
+        this.$refs.body,
+        this.$refs.eyeBg
+      ].forEach((ref) => {
         ref.getNode().cache().filters(this.filters)
           .pixelSize(25)
           .blurRadius(25)
