@@ -37,7 +37,7 @@
                       }"
                     />
                   </v-group>
-                  <v-group ref="stockPrice">
+                  <v-group ref="bgNumbers">
                     <v-text
                       :config="{
                         x: 50,
@@ -54,6 +54,10 @@
                     />
                     <v-text
                       :config="configStockPrice"
+                    />
+
+                    <v-text
+                      :config="configClock"
                     />
                   </v-group>
                   <v-group
@@ -246,6 +250,8 @@ import Konva from 'konva'
 import Random from '@/plugins/random-seed'
 
 const imageSrcPrefix = '/marika_kitada/images/'
+const zeroPad = (num) => ('0' + num).slice(-2)
+
 function addImageProcess (src) {
   return new Promise((resolve, reject) => {
     const img = new Image()
@@ -288,7 +294,9 @@ export default {
       subtitleAlign: 'left',
       selectedFilters: [],
       stockPrice: 0,
-      setStockPriceIntervalId: null
+      setStockPriceIntervalId: null,
+      clock: '12:34.56',
+      clockIntervalId: null
     }
   },
   computed: {
@@ -332,15 +340,30 @@ export default {
     },
     configStockPrice () {
       return {
-        x: 290,
-        y: 85,
-        width: 200,
+        x: 270,
+        y: 81,
+        width: 220,
         height: 110,
         text: (this.stockPrice) / 100,
         align: 'right',
-        fontSize: 43,
+        fontSize: 48,
         lineHeight: 1,
         fill: 'white'
+      }
+    },
+    configClock () {
+      return {
+        x: 740,
+        y: 30,
+        width: 500,
+        height: 110,
+        text: this.clock,
+        align: 'right',
+        fontSize: 100,
+        fontFamily: 'monospace',
+        fontStyle: 'bold',
+        lineHeight: 1,
+        fill: 'black'
       }
     },
     isRecording () {
@@ -370,10 +393,11 @@ export default {
     this.$refs.eyes.getNode().moveToBottom()
     this.recoderInit()
     this.toggleEyeTremble()
-    this.updateStockPrice()
+    this.enableStockPrice()
+    this.enableClock()
   },
   created () {
-    this.calcStockPrice()
+    this.updateStockPrice()
     console.log(
       'MediaRecorder.isTypeSupported: ',
       MediaRecorder.isTypeSupported('video/mp4')
@@ -382,6 +406,7 @@ export default {
   destroyed () {
     clearInterval(this.eyeTrembleIntervalId)
     clearInterval(this.setStockPriceDiffIntervalId)
+    clearInterval(this.clockIntervalId)
   },
   methods: {
     start () {
@@ -445,15 +470,25 @@ export default {
           .noise(0.7)
       })
     },
-    calcStockPrice () {
+    updateStockPrice () {
       const max = 40000 * 100
       const min = -10000 * 100
       const now = new Date()
       const random = new Random(now.getTime() * 100)
       this.stockPrice = random.nextInt(min, max)
     },
-    updateStockPrice () {
-      this.setStockPriceIntervalId = setInterval(this.calcStockPrice, 5000)
+    updateClock () {
+      const now = new Date()
+      const hours = zeroPad(now.getHours())
+      const minutes = zeroPad(now.getMinutes())
+      const seconds = zeroPad(now.getSeconds())
+      this.clock = `${hours}:${minutes}:${seconds}`
+    },
+    enableStockPrice () {
+      this.setStockPriceIntervalId = setInterval(this.updateStockPrice, 5000)
+    },
+    enableClock () {
+      this.clockIntervalId = setInterval(this.updateClock, 999)
     }
   }
 }
