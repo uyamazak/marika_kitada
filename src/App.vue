@@ -37,6 +37,25 @@
                       }"
                     />
                   </v-group>
+                  <v-group ref="stockPrice">
+                    <v-text
+                      :config="{
+                        x: 50,
+                        y: 80,
+                        width: 150,
+                        height: 110,
+                        text: '現在値',
+                        fontStyle: 'bold',
+                        align: 'left',
+                        fontSize: 45,
+                        lineHeight: 1,
+                        fill: 'white'
+                      }"
+                    />
+                    <v-text
+                      :config="configStockPrice"
+                    />
+                  </v-group>
                   <v-group
                     ref="marikaGroup"
                     :config="configMarika"
@@ -200,7 +219,6 @@
                       :label="name"
                       :value="name"
                     />
-
                     <v-btn
                       @click="applyFilter"
                     >
@@ -225,6 +243,8 @@
 
 <script>
 import Konva from 'konva'
+import Random from '@/plugins/random-seed'
+
 const imageSrcPrefix = '/marika_kitada/images/'
 function addImageProcess (src) {
   return new Promise((resolve, reject) => {
@@ -266,7 +286,9 @@ export default {
       eyeTrembleIntervalId: null,
       subtitleText: 'おはぎゃー、北田まりかです',
       subtitleAlign: 'left',
-      selectedFilters: []
+      selectedFilters: [],
+      stockPrice: 0,
+      setStockPriceIntervalId: null
     }
   },
   computed: {
@@ -308,6 +330,19 @@ export default {
         shadowOpacity: 1
       }
     },
+    configStockPrice () {
+      return {
+        x: 290,
+        y: 85,
+        width: 200,
+        height: 110,
+        text: (this.stockPrice) / 100,
+        align: 'right',
+        fontSize: 43,
+        lineHeight: 1,
+        fill: 'white'
+      }
+    },
     isRecording () {
       return this.recorderState === 'recording'
     },
@@ -335,12 +370,18 @@ export default {
     this.$refs.eyes.getNode().moveToBottom()
     this.recoderInit()
     this.toggleEyeTremble()
+    this.updateStockPrice()
   },
   created () {
+    this.calcStockPrice()
     console.log(
       'MediaRecorder.isTypeSupported: ',
       MediaRecorder.isTypeSupported('video/mp4')
     )
+  },
+  destroyed () {
+    clearInterval(this.eyeTrembleIntervalId)
+    clearInterval(this.setStockPriceDiffIntervalId)
   },
   methods: {
     start () {
@@ -403,6 +444,16 @@ export default {
           .levels(0.5)
           .noise(0.7)
       })
+    },
+    calcStockPrice () {
+      const max = 40000 * 100
+      const min = -10000 * 100
+      const now = new Date()
+      const random = new Random(now.getTime() * 100)
+      this.stockPrice = random.nextInt(min, max)
+    },
+    updateStockPrice () {
+      this.setStockPriceIntervalId = setInterval(this.calcStockPrice, 5000)
     }
   }
 }
